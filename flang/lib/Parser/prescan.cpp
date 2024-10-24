@@ -1201,19 +1201,36 @@ const char *Prescanner::FixedFormContinuationLine(bool mightNeedSpace) {
           return nullptr;
         }
       }
+      for (; j < 5; ++j) {
+        if (nextLine_[j] != ' ') {
+          return nullptr;
+        }
+      }
     } else if (features_.IsEnabled(LanguageFeature::OpenMP)) {
       // Fixed Source Form Conditional Compilation Sentinels.
       if (nextLine_[1] != '$') {
         return nullptr;
       }
       j++;
-    } else {
-      return nullptr;
-    }
-    for (; j < 5; ++j) {
-      if (nextLine_[j] != ' ') {
+      if (std::tolower(nextLine_[2]) == 'o' &&
+          std::tolower(nextLine_[3]) == 'm' &&
+          std::tolower(nextLine_[4]) == 'p') {
         return nullptr;
       }
+      bool reachLineEnd = false;
+      for (; j < 5; ++j) {
+        if (nextLine_[j] != ' ') {
+          reachLineEnd = true;
+        }
+      }
+      if (reachLineEnd == true) {
+        while (nextLine_[j] != '\n') {
+          ++j;
+        }
+        return nextLine_ + j;
+      }
+    } else {
+      return nullptr;
     }
     const char *col6{nextLine_ + 5};
     if (*col6 != '\n' && *col6 != '0' && !IsSpaceOrTab(col6)) {
