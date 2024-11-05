@@ -2087,6 +2087,14 @@ public:
     }
     Walk(std::get<OmpObjectList>(x.t));
   }
+  // void Unparse(const OmpDestroyClause &x) {
+  //   Walk(
+  //       std::get<OmpDestroyClause::InteropVar>(x.u));
+  // }
+  // void Unparse(const OmpUseClause &x) {
+  //   Walk(
+  //       std::get<OmpUseClause::InteropVar>(x.u));
+  // }
   void Unparse(const OmpMapClause::TypeModifier &x) {
     if (x == OmpMapClause::TypeModifier::OmpxHold) {
       Word("OMPX_HOLD");
@@ -2556,6 +2564,13 @@ public:
     Put(")");
     Walk(std::get<std::optional<OmpReductionInitializerClause>>(x.t));
   }
+
+  void Unparse(const OpenMPInteropConstruct &x) {
+    Word("INTEROP ");
+    Walk(std::get<OmpClauseList>(x.t));
+    Put("\n");
+  }
+
   bool Pre(const OpenMPDeclarativeConstruct &x) {
     BeginOpenMP();
     Word("!$OMP ");
@@ -2788,6 +2803,8 @@ public:
   WALK_NESTED_ENUM(OmpDefaultmapClause, VariableCategory) // OMP DEFAULTMAP
   WALK_NESTED_ENUM(
       OmpLastprivateClause, LastprivateModifier) // OMP lastprivate-modifier
+  // WALK_NESTED_ENUM(OmpDestroyClause, InteropVar) // OMP InteropVar
+  // WALK_NESTED_ENUM(OmpUseClause, InteropVar) // OMP InteropVar
   WALK_NESTED_ENUM(OmpScheduleModifierType, ModType) // OMP schedule-modifier
   WALK_NESTED_ENUM(OmpLinearModifier, Type) // OMP linear-modifier
   WALK_NESTED_ENUM(OmpDependenceType, Type) // OMP dependence-type

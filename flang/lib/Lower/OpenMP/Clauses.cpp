@@ -587,7 +587,21 @@ Depend make(const parser::OmpClause::Depend &inp,
 Destroy make(const parser::OmpClause::Destroy &inp,
              semantics::SemanticsContext &semaCtx) {
   // inp -> empty
-  llvm_unreachable("Empty: destroy");
+  // llvm_unreachable("Empty: destroy");
+    // inp.v -> std::optional<OmpDestroyClause>
+  // auto &&interopObject = (
+  //     [&](const parser::OmpDestroyClause &c) {
+  //       return makeObject(c.v, semaCtx);
+  //     },
+  //     inp.v);
+  // return Destroy{/*DestroyVar=*/std::move(interopObject)};
+    // inp.v -> std::optional<OmpDestroyClause>
+  auto &&maybeObject = maybeApply(
+    [&](const parser::OmpDestroyClause &c) {
+      return makeObject(c.v, semaCtx);
+    },
+    inp.v);
+  return Destroy{/*DestroyVar=*/std::move(maybeObject)};
 }
 
 Detach make(const parser::OmpClause::Detach &inp,
@@ -1223,7 +1237,24 @@ Update make(const parser::OmpClause::Update &inp,
 Use make(const parser::OmpClause::Use &inp,
          semantics::SemanticsContext &semaCtx) {
   // inp -> empty
-  llvm_unreachable("Empty: use");
+  // llvm_unreachable("Empty: use");
+  // auto &&interopObject = (
+  //     [&](const parser::OmpUseClause &c) {
+  //       return makeObject(c.v, semaCtx);
+  //     },
+  //     inp.v);
+  // return Use{/*UseVar=*/std::move(interopObject)};
+  // auto &&maybeObject = maybeApply(
+  // [&](const parser::OmpUseClause &c) {
+  //   return makeObject(c.v, semaCtx);
+  // },
+  // inp.v);
+    auto &&maybeObject = maybeApply(
+    [&](const parser::OmpUseClause &c) {
+      return makeObject(c.v, semaCtx);
+    },
+    inp.v);
+  return Use{/*UseVar=*/std::move(maybeObject)};
 }
 
 UseDeviceAddr make(const parser::OmpClause::UseDeviceAddr &inp,

@@ -10,6 +10,7 @@
 #include "definable.h"
 #include "flang/Parser/parse-tree.h"
 #include "flang/Semantics/tools.h"
+#include <iostream>
 
 namespace Fortran::semantics {
 
@@ -2371,7 +2372,7 @@ CHECK_SIMPLE_CLAUSE(Capture, OMPC_capture)
 CHECK_SIMPLE_CLAUSE(Contains, OMPC_contains)
 CHECK_SIMPLE_CLAUSE(Default, OMPC_default)
 CHECK_SIMPLE_CLAUSE(Depobj, OMPC_depobj)
-CHECK_SIMPLE_CLAUSE(Destroy, OMPC_destroy)
+// CHECK_SIMPLE_CLAUSE(Destroy, OMPC_destroy)
 CHECK_SIMPLE_CLAUSE(Detach, OMPC_detach)
 CHECK_SIMPLE_CLAUSE(DeviceType, OMPC_device_type)
 CHECK_SIMPLE_CLAUSE(DistSchedule, OMPC_dist_schedule)
@@ -2415,7 +2416,7 @@ CHECK_SIMPLE_CLAUSE(UsesAllocators, OMPC_uses_allocators)
 CHECK_SIMPLE_CLAUSE(Update, OMPC_update)
 CHECK_SIMPLE_CLAUSE(Write, OMPC_write)
 CHECK_SIMPLE_CLAUSE(Init, OMPC_init)
-CHECK_SIMPLE_CLAUSE(Use, OMPC_use)
+// CHECK_SIMPLE_CLAUSE(Use, OMPC_use)
 CHECK_SIMPLE_CLAUSE(Novariants, OMPC_novariants)
 CHECK_SIMPLE_CLAUSE(Nocontext, OMPC_nocontext)
 CHECK_SIMPLE_CLAUSE(At, OMPC_at)
@@ -2603,6 +2604,31 @@ static bool IsReductionAllowedForType(
 
   return ok;
 }
+
+void OmpStructureChecker::Enter(const parser::OmpClause::Destroy &x) {
+  CheckAllowedClause(llvm::omp::Clause::OMPC_destroy);
+  std::cout << "Inside destroy enter\n";
+  // llvm::omp::Directive dir{GetContext().directive};
+  // unsigned version{context_.langOptions().OpenMPVersion};
+  // if (dir == llvm::omp::Directive::OMPD_depobj) {
+  //   if (version < 52) {
+  //     context_.Say(GetContext().clauseSource,
+  //         "The object parameter in DESTROY clause in DEPOPJ construct "
+  //         "was introduced in %s"_port_en_US,
+  //         ThisVersion(52));
+  //   }
+  // }
+}
+
+void OmpStructureChecker::Enter(const parser::OmpClause::Use &x) {
+  CheckAllowedClause(llvm::omp::Clause::OMPC_use);
+  std::cout << "Inside Use enter\n";
+}
+
+// void OmpStructureChecker::Enter(const parser::OmpClause::init &x) {
+//   CheckAllowedClause(llvm::omp::Clause::OMPC_init);
+//   std::cout << "Inside init enter\n";
+// }
 
 void OmpStructureChecker::CheckReductionTypeList(
     const parser::OmpClause::Reduction &x) {
@@ -3757,6 +3783,18 @@ void OmpStructureChecker::Enter(const parser::OmpClause::UnifiedAddress &x) {
 void OmpStructureChecker::Enter(
     const parser::OmpClause::UnifiedSharedMemory &x) {
   CheckAllowedRequiresClause(llvm::omp::Clause::OMPC_unified_shared_memory);
+}
+
+void OmpStructureChecker::Enter(const parser::OpenMPInteropConstruct &x) {
+  // Needs to be implemented
+  std::cout << "Entered interop construct\n";
+  const auto &dir{std::get<parser::Verbatim>(x.t)};
+  PushContextAndClauseSets(dir.source, llvm::omp::Directive::OMPD_interop);
+}
+
+void OmpStructureChecker::Leave(const parser::OpenMPInteropConstruct &) {
+  std::cout  << "Exited interop construct\n";
+  dirContext_.pop_back();
 }
 
 void OmpStructureChecker::CheckAllowedRequiresClause(llvmOmpClause clause) {
