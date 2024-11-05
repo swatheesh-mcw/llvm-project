@@ -21,6 +21,7 @@
 #include <tuple>
 #include <utility>
 #include <variant>
+#include <iostream>
 
 namespace detail {
 template <typename C>
@@ -142,6 +143,7 @@ Object makeObject(const parser::OmpObject &object,
                   semantics::SemanticsContext &semaCtx) {
   // If object is a common block, expression analyzer won't be able to
   // do anything.
+  std::cout << "Inside Make object\n";
   if (const auto *name = std::get_if<parser::Name>(&object.u)) {
     assert(name->symbol && "Expecting Symbol");
     return Object{name->symbol, std::nullopt};

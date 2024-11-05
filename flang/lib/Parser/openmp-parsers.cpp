@@ -298,6 +298,22 @@ TYPE_CONTEXT_PARSER("Omp LINEAR clause"_en_US,
         construct<OmpLinearClause>(construct<OmpLinearClause::WithoutModifier>(
             nonemptyList(name), maybe(":" >> scalarIntConstantExpr)))))
 
+// InteropTypes
+TYPE_PARSER(construct<InteropType>(
+    "TARGET" >> pure(InteropType::Kind::Target) ||
+    "TARGETSYNC" >> pure(InteropType::Kind::TargetSync)))
+
+// InteropPreference
+// TYPE_PARSER(construct<InteropPreference>(name || intConstantExpr))
+
+// init clause
+TYPE_PARSER(construct<OmpInitClause>(
+    maybe(construct<OmpInitClause::InteropPreferenceList>(
+    nonemptyList(intConstantExpr))),
+    construct<OmpInitClause::InteropTypes>(
+    nonemptyList(Parser<InteropType>{})), 
+    construct<OmpInitClause::InteropVar>(Parser<OmpObject>{})))
+
 // 2.8.1 ALIGNED (list: alignment)
 TYPE_PARSER(construct<OmpAlignedClause>(
     Parser<OmpObjectList>{}, maybe(":" >> scalarIntConstantExpr)))
@@ -345,6 +361,9 @@ TYPE_PARSER(
                         parenthesized(Parser<OmpDefaultmapClause>{}))) ||
     "DEPEND" >> construct<OmpClause>(construct<OmpClause::Depend>(
                     parenthesized(Parser<OmpDependClause>{}))) ||
+    "DESTROY" >>
+        construct<OmpClause>(construct<OmpClause::Destroy>(maybe(parenthesized(
+            construct<OmpDestroyClause>(Parser<OmpObject>{}))))) ||
     "DEVICE" >> construct<OmpClause>(construct<OmpClause::Device>(
                     parenthesized(Parser<OmpDeviceClause>{}))) ||
     "DEVICE_TYPE" >> construct<OmpClause>(construct<OmpClause::DeviceType>(
@@ -375,6 +394,8 @@ TYPE_PARSER(
     "IF" >> construct<OmpClause>(construct<OmpClause::If>(
                 parenthesized(Parser<OmpIfClause>{}))) ||
     "INBRANCH" >> construct<OmpClause>(construct<OmpClause::Inbranch>()) ||
+    "INIT" >> construct<OmpClause>(construct<OmpClause::Init>(
+                parenthesized(Parser<OmpInitClause>{}))) ||
     "IS_DEVICE_PTR" >> construct<OmpClause>(construct<OmpClause::IsDevicePtr>(
                            parenthesized(Parser<OmpObjectList>{}))) ||
     "LASTPRIVATE" >> construct<OmpClause>(construct<OmpClause::Lastprivate>(
@@ -440,8 +461,8 @@ TYPE_PARSER(
                           parenthesized(scalarIntExpr))) ||
     "TO" >> construct<OmpClause>(construct<OmpClause::To>(
                 parenthesized(Parser<OmpObjectList>{}))) ||
-    "USE_DEVICE_PTR" >> construct<OmpClause>(construct<OmpClause::UseDevicePtr>(
-                            parenthesized(Parser<OmpObjectList>{}))) ||
+    "USE" >> construct<OmpClause>(construct<OmpClause::Use>(
+                parenthesized(Parser<OmpObject>{}))) ||
     "USE_DEVICE_ADDR" >>
         construct<OmpClause>(construct<OmpClause::UseDeviceAddr>(
             parenthesized(Parser<OmpObjectList>{}))) ||
@@ -789,6 +810,10 @@ TYPE_PARSER(construct<OpenMPSectionsConstruct>(
     Parser<OmpBeginSectionsDirective>{} / endOmpLine,
     Parser<OmpSectionBlocks>{}, Parser<OmpEndSectionsDirective>{} / endOmpLine))
 
+// 14.1 Interop construct
+TYPE_PARSER(sourced(construct<OpenMPInteropConstruct>(
+    verbatim("INTEROP"_tok), Parser<OmpClauseList>{})))
+
 TYPE_CONTEXT_PARSER("OpenMP construct"_en_US,
     startOmpLine >>
         withMessage("expected OpenMP construct"_err_en_US,
@@ -802,7 +827,8 @@ TYPE_CONTEXT_PARSER("OpenMP construct"_en_US,
                 construct<OpenMPConstruct>(Parser<OpenMPExecutableAllocate>{}),
                 construct<OpenMPConstruct>(Parser<OpenMPAllocatorsConstruct>{}),
                 construct<OpenMPConstruct>(Parser<OpenMPDeclarativeAllocate>{}),
-                construct<OpenMPConstruct>(Parser<OpenMPCriticalConstruct>{}))))
+                construct<OpenMPConstruct>(Parser<OpenMPCriticalConstruct>{}),
+                construct<OpenMPConstruct>(Parser<OpenMPInteropConstruct>{}))))
 
 // END OMP Block directives
 TYPE_PARSER(
