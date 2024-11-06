@@ -189,19 +189,6 @@ TYPE_PARSER(construct<OmpDeviceClause>(
         ":"),
     scalarIntExpr))
 
-// // init([ interop-modifier :], [interop-type], interop-var)
-// TYPE_PARSER(construct<OmpInitClause>(
-//     (
-//     ("INTEROP_MODIFIER" >> pure(OmpInitClause::InteropModifier::OmpInteropModifier) ||
-//      "INTEROP_TYPE" >> pure(OmpInitClause::InteropModifier::OmpInteropType)) /
-//         ":"),
-//     scalarIntExpr))
-
-// // Use(interop-var)
-// TYPE_PARSER(construct<OmpUseClause>(
-//     ("INTEROP_VAR" >> pure(OmpUseClause::InteropVar::OmpInteropVar)
-//     )))
-
 // device_type(any | host | nohost)
 TYPE_PARSER(construct<OmpDeviceTypeClause>(
     "ANY" >> pure(OmpDeviceTypeClause::Type::Any) ||
@@ -311,11 +298,19 @@ TYPE_CONTEXT_PARSER("Omp LINEAR clause"_en_US,
         construct<OmpLinearClause>(construct<OmpLinearClause::WithoutModifier>(
             nonemptyList(name), maybe(":" >> scalarIntConstantExpr)))))
 
-// use clause
-// TYPE_CONTEXT_PARSER("Omp Use clause"_en_US,
-//     construct<OmpUseClause>(
-//         construct<OmpUseClause>(construct<OmpUseClause::OmpTarget>(scalarIntExpr)) ||
-//         construct<OmpUseClause>(construct<OmpUseClause::OmpTargetSync>(scalarIntExpr))))
+// InteropTypes
+TYPE_PARSER(construct<InteropType>(
+    "TARGETSYNC" >> pure(InteropType::Kind::TargetSync) ||
+    "TARGET" >> pure(InteropType::Kind::Target)))
+
+// InteropPreference
+// TYPE_PARSER(construct<InteropPreference>(name || intConstantExpr))
+
+// init clause
+TYPE_PARSER(construct<OmpInitClause>(
+    maybe(parenthesized(nonemptyList(intConstantExpr)) / ","),
+    nonemptyList(Parser<InteropType>{}) / ":", 
+    Parser<OmpObject>{}))
 
 // 2.8.1 ALIGNED (list: alignment)
 TYPE_PARSER(construct<OmpAlignedClause>(
