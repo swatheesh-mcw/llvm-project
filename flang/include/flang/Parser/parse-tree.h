@@ -3568,6 +3568,20 @@ struct OmpLinearClause {
 // Destroy-clause
 WRAPPER_CLASS(OmpDestroyClause, OmpObject);
 
+// struct OmpUseClause {
+//   UNION_CLASS_BOILERPLATE(OmpUseClause);
+//   struct OmpTarget {
+//     BOILERPLATE(OmpTarget);
+//     OmpTarget(ScalarIntExpr &&s) : DeviceHandle{std::move(s)} {}
+//     ScalarIntExpr DeviceHandle;
+//   };
+//   struct OmpTargetSync {
+//     BOILERPLATE(OmpTargetSync);
+//     OmpTargetSync(ScalarIntExpr &&s) : ForeignSyncObj{std::move(s)} {}
+//     ScalarIntExpr ForeignSyncObj;
+//   };
+//   std::variant<OmpTarget, OmpTargetSync> u;
+// };
 // use-clause
 WRAPPER_CLASS(OmpUseClause, OmpObject);
 

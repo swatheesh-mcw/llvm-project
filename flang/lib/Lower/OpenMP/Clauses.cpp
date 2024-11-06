@@ -21,6 +21,7 @@
 #include <tuple>
 #include <utility>
 #include <variant>
+#include <iostream>
 
 namespace detail {
 template <typename C>
@@ -142,6 +143,7 @@ Object makeObject(const parser::OmpObject &object,
                   semantics::SemanticsContext &semaCtx) {
   // If object is a common block, expression analyzer won't be able to
   // do anything.
+  std::cout << "Inside Make object\n";
   if (const auto *name = std::get_if<parser::Name>(&object.u)) {
     assert(name->symbol && "Expecting Symbol");
     return Object{name->symbol, std::nullopt};
@@ -1237,7 +1239,7 @@ Update make(const parser::OmpClause::Update &inp,
 Use make(const parser::OmpClause::Use &inp,
          semantics::SemanticsContext &semaCtx) {
   // inp -> empty
-  // llvm_unreachable("Empty: use");
+  llvm_unreachable("Empty: use");
   // auto &&interopObject = (
   //     [&](const parser::OmpUseClause &c) {
   //       return makeObject(c.v, semaCtx);
@@ -1249,12 +1251,33 @@ Use make(const parser::OmpClause::Use &inp,
   //   return makeObject(c.v, semaCtx);
   // },
   // inp.v);
-    auto &&maybeObject = maybeApply(
-    [&](const parser::OmpUseClause &c) {
-      return makeObject(c.v, semaCtx);
-    },
-    inp.v);
-  return Use{/*UseVar=*/std::move(maybeObject)};
+  // auto maybeObject = maybeApply(
+  // [&](const parser::OmpUseClause &c) {
+  //   return makeObject(c.v, semaCtx);
+  // },
+  // inp.v);
+  // auto &t0 = <std::optional<parser::ScalarIntExpr>>(inp.v);
+  // return Use{/*UseVar=*/maybeApply(makeExprFn(semaCtx), inp.v)};
+  // using wrapped = parser::OmpUseClause;
+
+  // using Tuple = decltype(Use::t);
+  // return Use{Fortran::common::visit(
+  //     common::visitors{
+  //         [&](const wrapped::OmpTarget &s) -> Tuple {
+  //           return {
+  //               /*DeviceHandle=*/makeExpr(s.DeviceHandle, semaCtx)};
+  //         },
+  //         [&](const wrapped::OmpTargetSync &s) -> Tuple {
+  //           return {
+  //               /*ForeignSyncObj=*/makeExpr(s.ForeignSyncObj, semaCtx)};
+  //         },
+  //     },
+  //     inp.v.u)};
+  // return Use{/*UseVar*/makeObject(inp.v,semaCtx)};
+  // auto &&InteropVar = [&](const parser::OmpUseClause &t) {
+  //                       return makeObject(t.v, semaCtx);
+  //                     };
+  // return Use{/*InteropVar=*/makeObjects(InteropVar)};
 }
 
 UseDeviceAddr make(const parser::OmpClause::UseDeviceAddr &inp,

@@ -532,6 +532,8 @@ public:
   READ_FEATURE(OmpDestroyClause)
   // READ_FEATURE(OmpDestroyClause::InteropVar)
   READ_FEATURE(OmpUseClause)
+  // READ_FEATURE(OmpUseClause::OmpTarget)
+  // READ_FEATURE(OmpUseClause::OmpTargetSync)
   // READ_FEATURE(OmpInteropType)
   // READ_FEATURE(OmpInteropType::InteropType)
   // READ_FEATURE(OmpPreferenceListType)

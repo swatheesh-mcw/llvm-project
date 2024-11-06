@@ -311,6 +311,12 @@ TYPE_CONTEXT_PARSER("Omp LINEAR clause"_en_US,
         construct<OmpLinearClause>(construct<OmpLinearClause::WithoutModifier>(
             nonemptyList(name), maybe(":" >> scalarIntConstantExpr)))))
 
+// use clause
+// TYPE_CONTEXT_PARSER("Omp Use clause"_en_US,
+//     construct<OmpUseClause>(
+//         construct<OmpUseClause>(construct<OmpUseClause::OmpTarget>(scalarIntExpr)) ||
+//         construct<OmpUseClause>(construct<OmpUseClause::OmpTargetSync>(scalarIntExpr))))
+
 // 2.8.1 ALIGNED (list: alignment)
 TYPE_PARSER(construct<OmpAlignedClause>(
     Parser<OmpObjectList>{}, maybe(":" >> scalarIntConstantExpr)))
@@ -458,9 +464,8 @@ TYPE_PARSER(
                           parenthesized(scalarIntExpr))) ||
     "TO" >> construct<OmpClause>(construct<OmpClause::To>(
                 parenthesized(Parser<OmpObjectList>{}))) ||
-    "USE" >>
-        construct<OmpClause>(construct<OmpClause::Use>(maybe(parenthesized(
-            construct<OmpUseClause>(Parser<OmpObject>{}))))) ||
+    "USE" >> construct<OmpClause>(construct<OmpClause::Use>(
+                parenthesized(Parser<OmpObject>{}))) ||
     "USE_DEVICE_ADDR" >>
         construct<OmpClause>(construct<OmpClause::UseDeviceAddr>(
             parenthesized(Parser<OmpObjectList>{}))) ||

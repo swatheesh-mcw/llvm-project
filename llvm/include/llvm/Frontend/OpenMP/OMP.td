@@ -486,7 +486,6 @@ def OMPC_Update : Clause<"update"> {
 def OMPC_Use : Clause<"use"> {
   let clangClass = "OMPUseClause";
   let flangClass = "OmpUseClause";
-  let isValueOptional = true;
 }
 def OMPC_UsesAllocators : Clause<"uses_allocators"> {
   let clangClass = "OMPUsesAllocatorsClause";

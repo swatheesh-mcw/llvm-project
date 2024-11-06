@@ -2132,6 +2132,12 @@ public:
     Walk(x.modifier), Put("("), Walk(x.names, ","), Put(")");
     Walk(":", x.step);
   }
+  // void Unparse(const OmpUseClause::OmpTarget &x) {
+  //   Walk(x.DeviceHandle);
+  // }
+  // void Unparse(const OmpUseClause::OmpTargetSync &x) {
+  //   Walk(x.ForeignSyncObj);
+  // }
   void Unparse(const OmpReductionClause &x) {
     Walk(std::get<std::optional<OmpReductionClause::ReductionModifier>>(x.t),
         ",");

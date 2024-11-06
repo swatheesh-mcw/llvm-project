@@ -568,6 +568,8 @@ public:
   // NODE(InteropVarExpr, ScalarIntExpr)
   // NODE_ENUM(OmpDestroyClause, InteropVar)
   NODE(parser, OmpUseClause)
+  // NODE(OmpUseClause, OmpTarget)
+  // NODE(OmpUseClause, OmpTargetSync)
   // NODE_ENUM(OmpUseClause, InteropVar)
   // NODE(parser, OmpInitClause)
   // NODE_ENUM(OmpInitClause, InteropModifier)
