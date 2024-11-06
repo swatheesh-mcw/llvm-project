@@ -3565,24 +3565,24 @@ struct OmpLinearClause {
   std::variant<WithModifier, WithoutModifier> u;
 };
 
-// Destroy-clause
+// init-clause -> ([Interop-Modifier(InteropPreferenceList), InteropTypes: InteropVar])
+struct OmpInitClause {
+  TUPLE_CLASS_BOILERPLATE(OmpInitClause);
+  struct InteropPreference {
+    UNION_CLASS_BOILERPLATE(InteropPreference);
+    std::variant<std::string,IntConstantExpr> u;
+  };
+  WRAPPER_CLASS(InteropPreferenceList, std::list<InteropPreference>);
+  ENUM_CLASS(Type, Target, TargetSync);
+  WRAPPER_CLASS(InteropTypes, std::list<Type>);
+  WRAPPER_CLASS(InteropVar, OmpObject);
+  std::tuple<std::optional<InteropPreferenceList>,InteropTypes, InteropVar> t;
+};
+
+// Destroy-clause (InteropVar) (InteropVar -> OmpObject)
 WRAPPER_CLASS(OmpDestroyClause, OmpObject);
 
-// struct OmpUseClause {
-//   UNION_CLASS_BOILERPLATE(OmpUseClause);
-//   struct OmpTarget {
-//     BOILERPLATE(OmpTarget);
-//     OmpTarget(ScalarIntExpr &&s) : DeviceHandle{std::move(s)} {}
-//     ScalarIntExpr DeviceHandle;
-//   };
-//   struct OmpTargetSync {
-//     BOILERPLATE(OmpTargetSync);
-//     OmpTargetSync(ScalarIntExpr &&s) : ForeignSyncObj{std::move(s)} {}
-//     ScalarIntExpr ForeignSyncObj;
-//   };
-//   std::variant<OmpTarget, OmpTargetSync> u;
-// };
-// use-clause
+// use-clause (InteropVar) (InteropVar -> OmpObject)
 WRAPPER_CLASS(OmpUseClause, OmpObject);
 
 // 2.15.3.6 reduction-identifier -> + | - | * | .AND. | .OR. | .EQV. | .NEQV. |
@@ -4054,105 +4054,6 @@ struct OpenMPInteropConstruct {
   CharBlock source;
   std::tuple<Verbatim, OmpClauseList> t;
 };
-
-// struct DeviceType {
-//   ScalarIntExpr* DeviceHandle;
-// };
-
-// struct DeviceContextType {
-//   ScalarIntExpr* DeviceContextHandle;
-// };
-
-// struct PlatformType {
-//   ScalarIntExpr* PlatformHandle;
-// };
-
-// struct OmpTarget {
-//   TUPLE_CLASS_BOILERPLATE(OmpTarget);
-//   std::tuple<DeviceType, DeviceContextType, PlatformType> t;
-// };
-
-// struct OmpInteropVar {
-//   UNION_CLASS_BOILERPLATE(OmpInteropVar);
-//   ENUM_CLASS(InteropVar,Target,TargetSync)
-//   std::variant<InteropVar> u;
-// };
-
-// struct OmpTargetSync {
-//   ScalarIntExpr* ForeignSynchronizationHandle;
-// };
-
-// struct OmpInteropType {
-//   UNION_CLASS_BOILERPLATE(OmpInteropType);
-//   ENUM_CLASS(InteropType, Target, TargetSync)
-//   std::variant<InteropType> u;
-// };
-
-// struct OmpPreferenceListType {
-//   std::variant<ScalarIntExpr,CharBlock> ForeignRuntimeID;
-// };
-
-// struct OmpInteropModifier {
-//   std::list<OmpPreferenceListType> PreferenceList;
-// };
-
-// struct OmpInitClause {
-//   TUPLE_CLASS_BOILERPLATE(OmpInitClause);
-//   ENUM_CLASS(InteropModifier, OmpInteropModifier, OmpInteropType)
-//   std::tuple<InteropModifier, ScalarIntExpr> t;
-// };
-
-// struct OmpInteropVar {
-//   ScalarIntExpr v;
-// };
-// struct OmpDestroyClause {
-//   UNION_CLASS_BOILERPLATE(OmpDestroyClause);
-//   // TUPLE_CLASS_BOILERPLATE(OmpDestroyClause);
-//   // ENUM_CLASS(Destroy,Target,TargetSync)
-//   WRAPPER_CLASS(InteropVarKind, ScalarIntExpr);
-//   // ScalarIntExpr v;
-//   // std::tuple<InteropVar> t;
-//   std::variant<InteropVarKind> u;
-// };
-
-// struct OmpUseClause {
-//   UNION_CLASS_BOILERPLATE(OmpUseClause);
-//   // TUPLE_CLASS_BOILERPLATE(OmpUseClause);
-//   // ENUM_CLASS(InteropVar,Target,TargetSync)
-//   // std::tuple<InteropVar> t;
-//   ENUM_CLASS(InteropVar,OmpInteropVar)
-//   // WRAPPER_CLASS(InteropVarKind, ScalarIntExpr);
-//   // ScalarIntExpr v;
-//   // std::tuple<InteropVar> t;
-//   std::variant<InteropVar> u;
-// };
-
-// struct OmpDestroyClause {
-//   UNION_CLASS_BOILERPLATE(OmpDestroyClause);
-//   ENUM_CLASS(InteropVar, OmpInteropVar)
-//   std::variant<InteropVar> u;
-// };
-
-// struct OmpUseClause {
-//   UNION_CLASS_BOILERPLATE(OmpUseClause);
-//   ENUM_CLASS(InteropVar, OmpInteropVar)
-//   std::variant<InteropVar> u;
-// };
-
-// WRAPPER_CLASS(OmpInteropVar, OmpObject);
-// struct OmpDestroyClause {
-//   UNION_CLASS_BOILERPLATE(OmpDestroyClause)
-//   WRAPPER_CLASS(InteropVarObj, OmpObject);
-//   WRAPPER_CLASS(InteropVarExpr, ScalarIntExpr);
-//   std::variant<InteropVarObj, InteropVarExpr> u;
-// };
-
-
-// struct OmpUseClause {
-//   WRAPPER_CLASS_BOILERPLATE(OmpUseClause,OmpInteropVar);
-// };
-// WRAPPER_CLASS(OmpDestroyClause, OmpObject);
-// WRAPPER_CLASS(OmpUseClause, OmpObject);
 
 struct OpenMPConstruct {
   UNION_CLASS_BOILERPLATE(OpenMPConstruct);

@@ -2087,14 +2087,6 @@ public:
     }
     Walk(std::get<OmpObjectList>(x.t));
   }
-  // void Unparse(const OmpDestroyClause &x) {
-  //   Walk(
-  //       std::get<OmpDestroyClause::InteropVar>(x.u));
-  // }
-  // void Unparse(const OmpUseClause &x) {
-  //   Walk(
-  //       std::get<OmpUseClause::InteropVar>(x.u));
-  // }
   void Unparse(const OmpMapClause::TypeModifier &x) {
     if (x == OmpMapClause::TypeModifier::OmpxHold) {
       Word("OMPX_HOLD");
@@ -2132,12 +2124,6 @@ public:
     Walk(x.modifier), Put("("), Walk(x.names, ","), Put(")");
     Walk(":", x.step);
   }
-  // void Unparse(const OmpUseClause::OmpTarget &x) {
-  //   Walk(x.DeviceHandle);
-  // }
-  // void Unparse(const OmpUseClause::OmpTargetSync &x) {
-  //   Walk(x.ForeignSyncObj);
-  // }
   void Unparse(const OmpReductionClause &x) {
     Walk(std::get<std::optional<OmpReductionClause::ReductionModifier>>(x.t),
         ",");

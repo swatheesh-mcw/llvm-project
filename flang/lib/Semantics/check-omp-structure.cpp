@@ -2415,7 +2415,7 @@ CHECK_SIMPLE_CLAUSE(Untied, OMPC_untied)
 CHECK_SIMPLE_CLAUSE(UsesAllocators, OMPC_uses_allocators)
 CHECK_SIMPLE_CLAUSE(Update, OMPC_update)
 CHECK_SIMPLE_CLAUSE(Write, OMPC_write)
-CHECK_SIMPLE_CLAUSE(Init, OMPC_init)
+// CHECK_SIMPLE_CLAUSE(Init, OMPC_init)
 // CHECK_SIMPLE_CLAUSE(Use, OMPC_use)
 CHECK_SIMPLE_CLAUSE(Novariants, OMPC_novariants)
 CHECK_SIMPLE_CLAUSE(Nocontext, OMPC_nocontext)
@@ -2605,19 +2605,14 @@ static bool IsReductionAllowedForType(
   return ok;
 }
 
+void OmpStructureChecker::Enter(const parser::OmpClause::Init &x) {
+  CheckAllowedClause(llvm::omp::Clause::OMPC_init);
+  std::cout << "Inside Init enter\n";
+}
+
 void OmpStructureChecker::Enter(const parser::OmpClause::Destroy &x) {
   CheckAllowedClause(llvm::omp::Clause::OMPC_destroy);
   std::cout << "Inside destroy enter\n";
-  // llvm::omp::Directive dir{GetContext().directive};
-  // unsigned version{context_.langOptions().OpenMPVersion};
-  // if (dir == llvm::omp::Directive::OMPD_depobj) {
-  //   if (version < 52) {
-  //     context_.Say(GetContext().clauseSource,
-  //         "The object parameter in DESTROY clause in DEPOPJ construct "
-  //         "was introduced in %s"_port_en_US,
-  //         ThisVersion(52));
-  //   }
-  // }
 }
 
 void OmpStructureChecker::Enter(const parser::OmpClause::Use &x) {

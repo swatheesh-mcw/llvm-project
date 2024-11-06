@@ -397,8 +397,8 @@ TYPE_PARSER(
     "IF" >> construct<OmpClause>(construct<OmpClause::If>(
                 parenthesized(Parser<OmpIfClause>{}))) ||
     "INBRANCH" >> construct<OmpClause>(construct<OmpClause::Inbranch>()) ||
-    // "INIT" >> construct<OmpClause>(construct<OmpClause::Init>(
-    //                 parenthesized(Parser<OmpInitClause>{}))) ||
+    "INIT" >> construct<OmpClause>(construct<OmpClause::Init>(
+                parenthesized(Parser<OmpInitClause>{}))) ||
     "IS_DEVICE_PTR" >> construct<OmpClause>(construct<OmpClause::IsDevicePtr>(
                            parenthesized(Parser<OmpObjectList>{}))) ||
     "LASTPRIVATE" >> construct<OmpClause>(construct<OmpClause::Lastprivate>(

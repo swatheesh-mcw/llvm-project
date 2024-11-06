@@ -1240,44 +1240,6 @@ Use make(const parser::OmpClause::Use &inp,
          semantics::SemanticsContext &semaCtx) {
   // inp -> empty
   llvm_unreachable("Empty: use");
-  // auto &&interopObject = (
-  //     [&](const parser::OmpUseClause &c) {
-  //       return makeObject(c.v, semaCtx);
-  //     },
-  //     inp.v);
-  // return Use{/*UseVar=*/std::move(interopObject)};
-  // auto &&maybeObject = maybeApply(
-  // [&](const parser::OmpUseClause &c) {
-  //   return makeObject(c.v, semaCtx);
-  // },
-  // inp.v);
-  // auto maybeObject = maybeApply(
-  // [&](const parser::OmpUseClause &c) {
-  //   return makeObject(c.v, semaCtx);
-  // },
-  // inp.v);
-  // auto &t0 = <std::optional<parser::ScalarIntExpr>>(inp.v);
-  // return Use{/*UseVar=*/maybeApply(makeExprFn(semaCtx), inp.v)};
-  // using wrapped = parser::OmpUseClause;
-
-  // using Tuple = decltype(Use::t);
-  // return Use{Fortran::common::visit(
-  //     common::visitors{
-  //         [&](const wrapped::OmpTarget &s) -> Tuple {
-  //           return {
-  //               /*DeviceHandle=*/makeExpr(s.DeviceHandle, semaCtx)};
-  //         },
-  //         [&](const wrapped::OmpTargetSync &s) -> Tuple {
-  //           return {
-  //               /*ForeignSyncObj=*/makeExpr(s.ForeignSyncObj, semaCtx)};
-  //         },
-  //     },
-  //     inp.v.u)};
-  // return Use{/*UseVar*/makeObject(inp.v,semaCtx)};
-  // auto &&InteropVar = [&](const parser::OmpUseClause &t) {
-  //                       return makeObject(t.v, semaCtx);
-  //                     };
-  // return Use{/*InteropVar=*/makeObjects(InteropVar)};
 }
 
 UseDeviceAddr make(const parser::OmpClause::UseDeviceAddr &inp,
