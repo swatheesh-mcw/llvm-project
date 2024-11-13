@@ -473,6 +473,19 @@ TYPE_CONTEXT_PARSER("Omp LINEAR clause"_en_US,
 // OpenMPv5.2 12.5.2 detach-clause -> DETACH (event-handle)
 TYPE_PARSER(construct<OmpDetachClause>(Parser<OmpObject>{}))
 
+// InteropTypes
+TYPE_PARSER(construct<InteropType>(
+              "TARGETSYNC" >> pure(InteropType::Kind::TargetSync) ||
+              "TARGET" >> pure(InteropType::Kind::Target)))
+
+// InteropPreference
+// TYPE_PARSER(construct<InteropPreference>(name || intConstantExpr))
+
+// init clause
+TYPE_PARSER(construct<OmpInitClause>(
+    maybe(parenthesized(nonemptyList(intConstantExpr)) / ","),
+    nonemptyList(Parser<InteropType>{}) / ":", Parser<OmpObject>{}))
+
 // 2.8.1 ALIGNED (list: alignment)
 TYPE_PARSER(construct<OmpAlignedClause>(
     Parser<OmpObjectList>{}, maybe(":" >> scalarIntConstantExpr)))
@@ -582,6 +595,8 @@ TYPE_PARSER(
     "INBRANCH" >> construct<OmpClause>(construct<OmpClause::Inbranch>()) ||
     "INCLUSIVE" >> construct<OmpClause>(construct<OmpClause::Inclusive>(
                        parenthesized(Parser<OmpObjectList>{}))) ||
+    "INIT" >> construct<OmpClause>(construct<OmpClause::Init>(
+                parenthesized(Parser<OmpInitClause>{}))) ||
     "IS_DEVICE_PTR" >> construct<OmpClause>(construct<OmpClause::IsDevicePtr>(
                            parenthesized(Parser<OmpObjectList>{}))) ||
     "LASTPRIVATE" >> construct<OmpClause>(construct<OmpClause::Lastprivate>(
@@ -651,6 +666,9 @@ TYPE_PARSER(
                 parenthesized(Parser<OmpToClause>{}))) ||
     "USE_DEVICE_PTR" >> construct<OmpClause>(construct<OmpClause::UseDevicePtr>(
                             parenthesized(Parser<OmpObjectList>{}))) ||
+                parenthesized(Parser<OmpObjectList>{}))) ||
+    "USE" >> construct<OmpClause>(construct<OmpClause::Use>(
+                parenthesized(Parser<OmpObject>{}))) ||
     "USE_DEVICE_ADDR" >>
         construct<OmpClause>(construct<OmpClause::UseDeviceAddr>(
             parenthesized(Parser<OmpObjectList>{}))) ||
@@ -1029,6 +1047,10 @@ TYPE_PARSER(construct<OpenMPSectionsConstruct>(
     Parser<OmpBeginSectionsDirective>{} / endOmpLine,
     Parser<OmpSectionBlocks>{}, Parser<OmpEndSectionsDirective>{} / endOmpLine))
 
+// 14.1 Interop construct
+TYPE_PARSER(sourced(construct<OpenMPInteropConstruct>(
+    verbatim("INTEROP"_tok), Parser<OmpClauseList>{})))
+
 TYPE_CONTEXT_PARSER("OpenMP construct"_en_US,
     startOmpLine >>
         withMessage("expected OpenMP construct"_err_en_US,
@@ -1042,7 +1064,8 @@ TYPE_CONTEXT_PARSER("OpenMP construct"_en_US,
                 construct<OpenMPConstruct>(Parser<OpenMPExecutableAllocate>{}),
                 construct<OpenMPConstruct>(Parser<OpenMPAllocatorsConstruct>{}),
                 construct<OpenMPConstruct>(Parser<OpenMPDeclarativeAllocate>{}),
-                construct<OpenMPConstruct>(Parser<OpenMPCriticalConstruct>{}))))
+                construct<OpenMPConstruct>(Parser<OpenMPCriticalConstruct>{}),
+                construct<OpenMPConstruct>(Parser<OpenMPInteropConstruct>{}))))
 
 // END OMP Block directives
 TYPE_PARSER(
