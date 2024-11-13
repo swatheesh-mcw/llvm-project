@@ -2371,7 +2371,7 @@ CHECK_SIMPLE_CLAUSE(Capture, OMPC_capture)
 CHECK_SIMPLE_CLAUSE(Contains, OMPC_contains)
 CHECK_SIMPLE_CLAUSE(Default, OMPC_default)
 CHECK_SIMPLE_CLAUSE(Depobj, OMPC_depobj)
-CHECK_SIMPLE_CLAUSE(Destroy, OMPC_destroy)
+// CHECK_SIMPLE_CLAUSE(Destroy, OMPC_destroy)
 CHECK_SIMPLE_CLAUSE(Detach, OMPC_detach)
 CHECK_SIMPLE_CLAUSE(DeviceType, OMPC_device_type)
 CHECK_SIMPLE_CLAUSE(DistSchedule, OMPC_dist_schedule)
@@ -2414,8 +2414,8 @@ CHECK_SIMPLE_CLAUSE(Untied, OMPC_untied)
 CHECK_SIMPLE_CLAUSE(UsesAllocators, OMPC_uses_allocators)
 CHECK_SIMPLE_CLAUSE(Update, OMPC_update)
 CHECK_SIMPLE_CLAUSE(Write, OMPC_write)
-CHECK_SIMPLE_CLAUSE(Init, OMPC_init)
-CHECK_SIMPLE_CLAUSE(Use, OMPC_use)
+// CHECK_SIMPLE_CLAUSE(Init, OMPC_init)
+// CHECK_SIMPLE_CLAUSE(Use, OMPC_use)
 CHECK_SIMPLE_CLAUSE(Novariants, OMPC_novariants)
 CHECK_SIMPLE_CLAUSE(Nocontext, OMPC_nocontext)
 CHECK_SIMPLE_CLAUSE(At, OMPC_at)
@@ -2602,6 +2602,18 @@ static bool IsReductionAllowedForType(
       definedOp.u);
 
   return ok;
+}
+
+void OmpStructureChecker::Enter(const parser::OmpClause::Init &x) {
+  CheckAllowedClause(llvm::omp::Clause::OMPC_init);
+}
+
+void OmpStructureChecker::Enter(const parser::OmpClause::Destroy &x) {
+  CheckAllowedClause(llvm::omp::Clause::OMPC_destroy);
+}
+
+void OmpStructureChecker::Enter(const parser::OmpClause::Use &x) {
+  CheckAllowedClause(llvm::omp::Clause::OMPC_use);
 }
 
 void OmpStructureChecker::CheckReductionTypeList(
@@ -3757,6 +3769,44 @@ void OmpStructureChecker::Enter(const parser::OmpClause::UnifiedAddress &x) {
 void OmpStructureChecker::Enter(
     const parser::OmpClause::UnifiedSharedMemory &x) {
   CheckAllowedRequiresClause(llvm::omp::Clause::OMPC_unified_shared_memory);
+}
+
+void OmpStructureChecker::Enter(const parser::OpenMPInteropConstruct &x) {
+  bool isTargetSyncOccured{false};
+  const auto &dir{std::get<parser::Verbatim>(x.t)};
+  PushContextAndClauseSets(dir.source, llvm::omp::Directive::OMPD_interop);
+  const auto &clauseList{std::get<parser::OmpClauseList>(x.t)};
+  for (const auto &clause : clauseList.v) {
+    common::visit(
+      common::visitors{
+        [&](const parser::OmpClause::Init &InitClause) {
+          const auto &InteropTypeList{
+              std::get<1>(InitClause.v.t)};
+          for (auto &InteropTypeVal : InteropTypeList.v) {
+            if (*(parser::Unwrap<parser::InteropType::Kind>(
+                    InteropTypeVal)) ==
+                parser::InteropType::Kind::TargetSync) {
+              isTargetSyncOccured = true;
+              break;
+            }
+          }
+        },
+        [&](const parser::OmpClause::Depend &DependClause) {
+          if (!isTargetSyncOccured) {
+            context_.Say(GetContext().clauseSource,
+                          "A depend clause can only appear on the "
+                          "directive if the interop-type "
+                          "includes targetsync"_err_en_US);
+          }
+        },
+        [&](const auto &) {},
+    },
+    clause.u);
+  }
+}
+
+void OmpStructureChecker::Leave(const parser::OpenMPInteropConstruct &) {
+  dirContext_.pop_back();
 }
 
 void OmpStructureChecker::CheckAllowedRequiresClause(llvmOmpClause clause) {

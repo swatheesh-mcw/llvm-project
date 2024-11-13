@@ -3565,6 +3565,32 @@ struct OmpLinearClause {
   std::variant<WithModifier, WithoutModifier> u;
 };
 
+struct InteropType {
+  UNION_CLASS_BOILERPLATE(InteropType);
+  ENUM_CLASS(Kind, Target, TargetSync)
+  std::variant<Kind> u;
+};
+
+// struct InteropPreference {
+//   UNION_CLASS_BOILERPLATE(InteropPreference);
+//   std::variant<Name,IntConstantExpr> u;
+// };
+
+// init-clause -> ([Interop-Modifier(InteropPreferenceList), InteropTypes: InteropVar])
+struct OmpInitClause {
+  TUPLE_CLASS_BOILERPLATE(OmpInitClause);
+  WRAPPER_CLASS(InteropPreferenceList, std::list<IntConstantExpr>);
+  WRAPPER_CLASS(InteropTypes, std::list<InteropType>);
+  WRAPPER_CLASS(InteropVar, OmpObject);
+  std::tuple<std::optional<InteropPreferenceList>, InteropTypes, InteropVar> t;
+};
+
+// Destroy-clause (InteropVar) (InteropVar -> OmpObject)
+WRAPPER_CLASS(OmpDestroyClause, OmpObject);
+
+// use-clause (InteropVar) (InteropVar -> OmpObject)
+WRAPPER_CLASS(OmpUseClause, OmpObject);
+
 // 2.15.3.6 reduction-identifier -> + | - | * | .AND. | .OR. | .EQV. | .NEQV. |
 //                         MAX | MIN | IAND | IOR | IEOR
 struct OmpReductionOperator {
@@ -4028,13 +4054,20 @@ struct OpenMPLoopConstruct {
       t;
 };
 
+// 14.1 interop -> INTEROP clause[ [ [,] clause]...]
+struct OpenMPInteropConstruct {
+  TUPLE_CLASS_BOILERPLATE(OpenMPInteropConstruct);
+  CharBlock source;
+  std::tuple<Verbatim, OmpClauseList> t;
+};
+
 struct OpenMPConstruct {
   UNION_CLASS_BOILERPLATE(OpenMPConstruct);
   std::variant<OpenMPStandaloneConstruct, OpenMPSectionsConstruct,
       OpenMPSectionConstruct, OpenMPLoopConstruct, OpenMPBlockConstruct,
       OpenMPAtomicConstruct, OpenMPDeclarativeAllocate,
       OpenMPExecutableAllocate, OpenMPAllocatorsConstruct,
-      OpenMPCriticalConstruct>
+      OpenMPCriticalConstruct, OpenMPInteropConstruct>
       u;
 };
 

@@ -2073,6 +2073,11 @@ public:
         ":");
     Walk(std::get<OmpObjectList>(x.t));
   }
+  void Unparse(const OmpInitClause &x) {
+    Walk(std::get<std::optional<OmpInitClause::InteropPreferenceList>>(x.t));
+    Walk(std::get<OmpInitClause::InteropTypes>(x.t));
+    Walk(std::get<OmpInitClause::InteropVar>(x.t));
+  }
   void Unparse(const OmpMapClause &x) {
     auto &typeMod =
         std::get<std::optional<std::list<OmpMapClause::TypeModifier>>>(x.t);
@@ -2556,6 +2561,13 @@ public:
     Put(")");
     Walk(std::get<std::optional<OmpReductionInitializerClause>>(x.t));
   }
+
+  void Unparse(const OpenMPInteropConstruct &x) {
+    Word("INTEROP ");
+    Walk(std::get<OmpClauseList>(x.t));
+    Put("\n");
+  }
+
   bool Pre(const OpenMPDeclarativeConstruct &x) {
     BeginOpenMP();
     Word("!$OMP ");
@@ -2788,6 +2800,7 @@ public:
   WALK_NESTED_ENUM(OmpDefaultmapClause, VariableCategory) // OMP DEFAULTMAP
   WALK_NESTED_ENUM(
       OmpLastprivateClause, LastprivateModifier) // OMP lastprivate-modifier
+  WALK_NESTED_ENUM(InteropType, Kind) // OMP InteropVar
   WALK_NESTED_ENUM(OmpScheduleModifierType, ModType) // OMP schedule-modifier
   WALK_NESTED_ENUM(OmpLinearModifier, Type) // OMP linear-modifier
   WALK_NESTED_ENUM(OmpDependenceType, Type) // OMP dependence-type
