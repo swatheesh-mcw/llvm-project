@@ -10,7 +10,6 @@
 #include "definable.h"
 #include "flang/Parser/parse-tree.h"
 #include "flang/Semantics/tools.h"
-#include <iostream>
 
 namespace Fortran::semantics {
 
@@ -2607,23 +2606,15 @@ static bool IsReductionAllowedForType(
 
 void OmpStructureChecker::Enter(const parser::OmpClause::Init &x) {
   CheckAllowedClause(llvm::omp::Clause::OMPC_init);
-  std::cout << "Inside Init enter\n";
 }
 
 void OmpStructureChecker::Enter(const parser::OmpClause::Destroy &x) {
   CheckAllowedClause(llvm::omp::Clause::OMPC_destroy);
-  std::cout << "Inside destroy enter\n";
 }
 
 void OmpStructureChecker::Enter(const parser::OmpClause::Use &x) {
   CheckAllowedClause(llvm::omp::Clause::OMPC_use);
-  std::cout << "Inside Use enter\n";
 }
-
-// void OmpStructureChecker::Enter(const parser::OmpClause::init &x) {
-//   CheckAllowedClause(llvm::omp::Clause::OMPC_init);
-//   std::cout << "Inside init enter\n";
-// }
 
 void OmpStructureChecker::CheckReductionTypeList(
     const parser::OmpClause::Reduction &x) {
@@ -3781,14 +3772,36 @@ void OmpStructureChecker::Enter(
 }
 
 void OmpStructureChecker::Enter(const parser::OpenMPInteropConstruct &x) {
-  // Needs to be implemented
-  std::cout << "Entered interop construct\n";
+  bool isTargetSyncOccured{false};
   const auto &dir{std::get<parser::Verbatim>(x.t)};
   PushContextAndClauseSets(dir.source, llvm::omp::Directive::OMPD_interop);
+  const auto &clauseList{std::get<parser::OmpClauseList>(x.t)};
+  for (const auto &clause : clauseList.v) {
+    common::visit(
+        common::visitors{
+            [&](const parser::OmpClause::Init &InitClause) {
+              const auto &InteropTypeList {std::get<1>(InitClause.v.t)};
+              for(auto &InteropTypeVal : InteropTypeList.v){
+                if(*(parser::Unwrap<parser::InteropType::Kind>(InteropTypeVal)) == parser::InteropType::Kind::TargetSync) {
+                  isTargetSyncOccured = true;
+                  break;
+                }
+              }
+            },
+            [&](const parser::OmpClause::Depend &DependClause) {
+              if(!isTargetSyncOccured) {
+                context_.Say(GetContext().clauseSource,
+                "A depend clause can only appear on the directive if the interop-type "
+                "includes targetsync"_err_en_US);
+              }
+            },
+            [&](const auto &) {},
+        },
+    clause.u);
+  }
 }
 
 void OmpStructureChecker::Leave(const parser::OpenMPInteropConstruct &) {
-  std::cout  << "Exited interop construct\n";
   dirContext_.pop_back();
 }
 

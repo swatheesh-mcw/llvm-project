@@ -905,33 +905,5 @@ void Walk(OmpLinearClause::WithoutModifier &x, M &mutator) {
     mutator.Post(x);
   }
 }
-// template <typename V>
-// void Walk(const OmpUseClause::OmpTarget &x, V &visitor) {
-//   if (visitor.Pre(x)) {
-//     Walk(x.DeviceHandle, visitor);
-//     visitor.Post(x);
-//   }
-// }
-// template <typename M>
-// void Walk(OmpUseClause::OmpTarget &x, M &mutator) {
-//   if (mutator.Pre(x)) {
-//     Walk(x.DeviceHandle, mutator);
-//     mutator.Post(x);
-//   }
-// }
-// template <typename V>
-// void Walk(const OmpUseClause::OmpTargetSync &x, V &visitor) {
-//   if (visitor.Pre(x)) {
-//     Walk(x.ForeignSyncObj, visitor);
-//     visitor.Post(x);
-//   }
-// }
-// template <typename M>
-// void Walk(OmpUseClause::OmpTargetSync &x, M &mutator) {
-//   if (mutator.Pre(x)) {
-//     Walk(x.ForeignSyncObj, mutator);
-//     mutator.Post(x);
-//   }
-// }
 } // namespace Fortran::parser
 #endif // FORTRAN_PARSER_PARSE_TREE_VISITOR_H_

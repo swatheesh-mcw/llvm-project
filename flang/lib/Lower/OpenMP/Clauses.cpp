@@ -21,7 +21,6 @@
 #include <tuple>
 #include <utility>
 #include <variant>
-#include <iostream>
 
 namespace detail {
 template <typename C>
@@ -143,7 +142,6 @@ Object makeObject(const parser::OmpObject &object,
                   semantics::SemanticsContext &semaCtx) {
   // If object is a common block, expression analyzer won't be able to
   // do anything.
-  std::cout << "Inside Make object\n";
   if (const auto *name = std::get_if<parser::Name>(&object.u)) {
     assert(name->symbol && "Expecting Symbol");
     return Object{name->symbol, std::nullopt};
@@ -589,21 +587,7 @@ Depend make(const parser::OmpClause::Depend &inp,
 Destroy make(const parser::OmpClause::Destroy &inp,
              semantics::SemanticsContext &semaCtx) {
   // inp -> empty
-  // llvm_unreachable("Empty: destroy");
-    // inp.v -> std::optional<OmpDestroyClause>
-  // auto &&interopObject = (
-  //     [&](const parser::OmpDestroyClause &c) {
-  //       return makeObject(c.v, semaCtx);
-  //     },
-  //     inp.v);
-  // return Destroy{/*DestroyVar=*/std::move(interopObject)};
-    // inp.v -> std::optional<OmpDestroyClause>
-  auto &&maybeObject = maybeApply(
-    [&](const parser::OmpDestroyClause &c) {
-      return makeObject(c.v, semaCtx);
-    },
-    inp.v);
-  return Destroy{/*DestroyVar=*/std::move(maybeObject)};
+  llvm_unreachable("Empty: destroy");
 }
 
 Detach make(const parser::OmpClause::Detach &inp,
