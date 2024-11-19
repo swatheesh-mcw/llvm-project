@@ -3773,6 +3773,7 @@ void OmpStructureChecker::Enter(
 
 void OmpStructureChecker::Enter(const parser::OpenMPInteropConstruct &x) {
   bool isTargetSyncOccured{false};
+  int targetCount{0}, targetSyncCount{0};
   const auto &dir{std::get<parser::Verbatim>(x.t)};
   PushContextAndClauseSets(dir.source, llvm::omp::Directive::OMPD_interop);
   const auto &clauseList{std::get<parser::OmpClauseList>(x.t)};
@@ -3787,8 +3788,15 @@ void OmpStructureChecker::Enter(const parser::OpenMPInteropConstruct &x) {
                     InteropTypeVal)) ==
                 parser::InteropType::Kind::TargetSync) {
               isTargetSyncOccured = true;
-              break;
+              ++targetSyncCount;
+            } else {
+              ++targetCount;
             }
+            if (targetCount >= 2 || targetSyncCount >= 2) {
+              context_.Say(GetContext().clauseSource,
+                          "Each interop-type may be speciﬁed "
+                          "at most once."_err_en_US);
+            } 
           }
         },
         [&](const parser::OmpClause::Depend &DependClause) {

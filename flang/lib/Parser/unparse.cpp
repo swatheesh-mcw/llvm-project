@@ -2076,6 +2076,7 @@ public:
   void Unparse(const OmpInitClause &x) {
     Walk(std::get<std::optional<OmpInitClause::InteropPreferenceList>>(x.t));
     Walk(std::get<OmpInitClause::InteropTypes>(x.t));
+    Put(":");
     Walk(std::get<OmpInitClause::InteropVar>(x.t));
   }
   void Unparse(const OmpMapClause &x) {
