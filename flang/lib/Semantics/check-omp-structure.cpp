@@ -3773,6 +3773,7 @@ void OmpStructureChecker::Enter(
 
 void OmpStructureChecker::Enter(const parser::OpenMPInteropConstruct &x) {
   bool isTargetSyncOccured{false};
+  bool isDependClauseOccured{false};
   int targetCount{0}, targetSyncCount{0};
   const auto &dir{std::get<parser::Verbatim>(x.t)};
   PushContextAndClauseSets(dir.source, llvm::omp::Directive::OMPD_interop);
@@ -3800,16 +3801,17 @@ void OmpStructureChecker::Enter(const parser::OpenMPInteropConstruct &x) {
           }
         },
         [&](const parser::OmpClause::Depend &DependClause) {
-          if (!isTargetSyncOccured) {
-            context_.Say(GetContext().clauseSource,
-                          "A depend clause can only appear on the "
-                          "directive if the interop-type "
-                          "includes targetsync"_err_en_US);
-          }
+          isDependClauseOccured = true;
         },
         [&](const auto &) {},
     },
     clause.u);
+  }
+  if (isDependClauseOccured && !isTargetSyncOccured) {
+    context_.Say(GetContext().clauseSource,
+                "A depend clause can only appear on the "
+                "directive if the interop-type "
+                "includes targetsync"_err_en_US);
   }
 }
 
