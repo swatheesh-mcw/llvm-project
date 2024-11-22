@@ -2090,8 +2090,14 @@ public:
         ":");
     Walk(std::get<OmpObjectList>(x.t));
   }
+  void Unparse(const OmpInitClause::InteropTypes &x) {
+    Walk(x.v,",");
+  }
+  void Unparse(const OmpInitClause::InteropPreferenceList &x) {
+    Walk(x.v,",");
+  }
   void Unparse(const OmpInitClause &x) {
-    Walk(std::get<std::optional<OmpInitClause::InteropPreferenceList>>(x.t));
+    Walk("PREFER_TYPE(",std::get<std::optional<OmpInitClause::InteropPreferenceList>>(x.t),"),");
     Walk(std::get<OmpInitClause::InteropTypes>(x.t));
     Put(":");
     Walk(std::get<OmpInitClause::InteropVar>(x.t));
@@ -2649,9 +2655,11 @@ public:
   }
 
   void Unparse(const OpenMPInteropConstruct &x) {
-    Word("INTEROP ");
+    BeginOpenMP();
+    Word("!$OMP INTEROP");
     Walk(std::get<OmpClauseList>(x.t));
     Put("\n");
+    EndOpenMP();
   }
 
   bool Pre(const OpenMPDeclarativeConstruct &x) {

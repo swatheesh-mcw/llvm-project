@@ -483,7 +483,7 @@ TYPE_PARSER(construct<InteropType>(
 
 // init clause
 TYPE_PARSER(construct<OmpInitClause>(
-    maybe(parenthesized(nonemptyList(intConstantExpr)) / ","),
+    maybe("PREFER_TYPE" >> parenthesized(nonemptyList(intConstantExpr)) / ","),
     nonemptyList(Parser<InteropType>{}) / ":", Parser<OmpObject>{}))
 
 // 2.8.1 ALIGNED (list: alignment)
@@ -821,6 +821,10 @@ TYPE_PARSER(sourced(construct<OmpSimpleStandaloneDirective>(first(
 TYPE_PARSER(sourced(construct<OpenMPSimpleStandaloneConstruct>(
     Parser<OmpSimpleStandaloneDirective>{}, Parser<OmpClauseList>{})))
 
+// 14.1 Interop construct
+TYPE_PARSER(sourced(construct<OpenMPInteropConstruct>(
+    verbatim("INTEROP"_tok), sourced(Parser<OmpClauseList>{}))))
+
 // Standalone Constructs
 TYPE_PARSER(
     sourced(construct<OpenMPStandaloneConstruct>(
@@ -829,7 +833,8 @@ TYPE_PARSER(
         construct<OpenMPStandaloneConstruct>(Parser<OpenMPCancelConstruct>{}) ||
         construct<OpenMPStandaloneConstruct>(
             Parser<OpenMPCancellationPointConstruct>{}) ||
-        construct<OpenMPStandaloneConstruct>(Parser<OpenMPDepobjConstruct>{})) /
+        construct<OpenMPStandaloneConstruct>(Parser<OpenMPDepobjConstruct>{}) ||
+        construct<OpenMPStandaloneConstruct>(Parser<OpenMPInteropConstruct>{})) /
     endOfLine)
 
 // Directives enclosing structured-block
@@ -1046,10 +1051,6 @@ TYPE_PARSER(construct<OpenMPSectionsConstruct>(
     Parser<OmpBeginSectionsDirective>{} / endOmpLine,
     Parser<OmpSectionBlocks>{}, Parser<OmpEndSectionsDirective>{} / endOmpLine))
 
-// 14.1 Interop construct
-TYPE_PARSER(sourced(construct<OpenMPInteropConstruct>(
-    verbatim("INTEROP"_tok), Parser<OmpClauseList>{})))
-
 TYPE_CONTEXT_PARSER("OpenMP construct"_en_US,
     startOmpLine >>
         withMessage("expected OpenMP construct"_err_en_US,
@@ -1063,8 +1064,7 @@ TYPE_CONTEXT_PARSER("OpenMP construct"_en_US,
                 construct<OpenMPConstruct>(Parser<OpenMPExecutableAllocate>{}),
                 construct<OpenMPConstruct>(Parser<OpenMPAllocatorsConstruct>{}),
                 construct<OpenMPConstruct>(Parser<OpenMPDeclarativeAllocate>{}),
-                construct<OpenMPConstruct>(Parser<OpenMPCriticalConstruct>{}),
-                construct<OpenMPConstruct>(Parser<OpenMPInteropConstruct>{}))))
+                construct<OpenMPConstruct>(Parser<OpenMPCriticalConstruct>{}))))
 
 // END OMP Block directives
 TYPE_PARSER(

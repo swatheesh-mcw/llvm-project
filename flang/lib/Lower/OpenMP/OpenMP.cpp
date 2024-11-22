@@ -2841,6 +2841,13 @@ static void genOMP(lower::AbstractConverter &converter, lower::SymMap &symTable,
   TODO(converter.getCurrentLocation(), "OpenMPDepobjConstruct");
 }
 
+static void genOMP(lower::AbstractConverter &converter, lower::SymMap &symTable,
+                   semantics::SemanticsContext &semaCtx,
+                   lower::pft::Evaluation &eval,
+                   const parser::OpenMPInteropConstruct &interopConstruct) {
+  TODO(converter.getCurrentLocation(), "OpenMPInteropConstruct");
+}
+
 static void
 genOMP(lower::AbstractConverter &converter, lower::SymMap &symTable,
        semantics::SemanticsContext &semaCtx, lower::pft::Evaluation &eval,
@@ -2992,13 +2999,6 @@ static void genOMP(lower::AbstractConverter &converter, lower::SymMap &symTable,
                    lower::pft::Evaluation &eval,
                    const parser::OpenMPExecutableAllocate &execAllocConstruct) {
   TODO(converter.getCurrentLocation(), "OpenMPExecutableAllocate");
-}
-
-static void genOMP(lower::AbstractConverter &converter, lower::SymMap &symTable,
-                   semantics::SemanticsContext &semaCtx,
-                   lower::pft::Evaluation &eval,
-                   const parser::OpenMPInteropConstruct &interopConstruct) {
-  TODO(converter.getCurrentLocation(), "OpenMPInteropConstruct");
 }
 
 static void genOMP(lower::AbstractConverter &converter, lower::SymMap &symTable,

@@ -3740,9 +3740,8 @@ struct OmpOrderClause {
 
 // InteropType
 struct InteropType {
-  UNION_CLASS_BOILERPLATE(InteropType);
   ENUM_CLASS(Kind, Target, TargetSync)
-  std::variant<Kind> u;
+  WRAPPER_CLASS_BOILERPLATE(InteropType, Kind);
 };
 
 // struct InteropPreference {
@@ -4193,6 +4192,13 @@ struct OmpSimpleStandaloneDirective {
   CharBlock source;
 };
 
+// 14.1 interop -> INTEROP clause[ [ [,] clause]...]
+struct OpenMPInteropConstruct {
+  TUPLE_CLASS_BOILERPLATE(OpenMPInteropConstruct);
+  CharBlock source;
+  std::tuple<Verbatim, OmpClauseList> t;
+};
+
 struct OpenMPSimpleStandaloneConstruct {
   TUPLE_CLASS_BOILERPLATE(OpenMPSimpleStandaloneConstruct);
   CharBlock source;
@@ -4204,7 +4210,7 @@ struct OpenMPStandaloneConstruct {
   CharBlock source;
   std::variant<OpenMPSimpleStandaloneConstruct, OpenMPFlushConstruct,
       OpenMPCancelConstruct, OpenMPCancellationPointConstruct,
-      OpenMPDepobjConstruct>
+      OpenMPDepobjConstruct, OpenMPInteropConstruct>
       u;
 };
 
@@ -4247,20 +4253,13 @@ struct OpenMPLoopConstruct {
       t;
 };
 
-// 14.1 interop -> INTEROP clause[ [ [,] clause]...]
-struct OpenMPInteropConstruct {
-  TUPLE_CLASS_BOILERPLATE(OpenMPInteropConstruct);
-  CharBlock source;
-  std::tuple<Verbatim, OmpClauseList> t;
-};
-
 struct OpenMPConstruct {
   UNION_CLASS_BOILERPLATE(OpenMPConstruct);
   std::variant<OpenMPStandaloneConstruct, OpenMPSectionsConstruct,
       OpenMPSectionConstruct, OpenMPLoopConstruct, OpenMPBlockConstruct,
       OpenMPAtomicConstruct, OpenMPDeclarativeAllocate,
       OpenMPExecutableAllocate, OpenMPAllocatorsConstruct,
-      OpenMPCriticalConstruct, OpenMPInteropConstruct>
+      OpenMPCriticalConstruct>
       u;
 };
 
