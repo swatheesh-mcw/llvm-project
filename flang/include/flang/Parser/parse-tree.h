@@ -3738,6 +3738,29 @@ struct OmpOrderClause {
   std::tuple<std::optional<OmpOrderModifier>, Type> t;
 };
 
+// InteropType
+struct InteropType {
+  ENUM_CLASS(Kind, Target, TargetSync)
+  WRAPPER_CLASS_BOILERPLATE(InteropType, Kind);
+};
+
+// struct InteropPreference {
+//   UNION_CLASS_BOILERPLATE(InteropPreference);
+//   std::variant<Name,IntConstantExpr> u;
+// };
+
+// init-clause -> ([Interop-Modifier(InteropPreferenceList), InteropTypes: InteropVar])
+struct OmpInitClause {
+  TUPLE_CLASS_BOILERPLATE(OmpInitClause);
+  WRAPPER_CLASS(InteropPreferenceList, std::list<IntConstantExpr>);
+  WRAPPER_CLASS(InteropTypes, std::list<InteropType>);
+  WRAPPER_CLASS(InteropVar, OmpObject);
+  std::tuple<std::optional<InteropPreferenceList>, InteropTypes, InteropVar> t;
+};
+
+// use-clause (InteropVar) (InteropVar -> OmpObject)
+WRAPPER_CLASS(OmpUseClause, OmpObject);
+
 // 2.5 proc-bind-clause -> PROC_BIND (MASTER | CLOSE | SPREAD)
 struct OmpProcBindClause {
   ENUM_CLASS(Type, Close, Master, Spread, Primary)
@@ -4169,6 +4192,13 @@ struct OmpSimpleStandaloneDirective {
   CharBlock source;
 };
 
+// 14.1 interop -> INTEROP clause[ [ [,] clause]...]
+struct OpenMPInteropConstruct {
+  TUPLE_CLASS_BOILERPLATE(OpenMPInteropConstruct);
+  CharBlock source;
+  std::tuple<Verbatim, OmpClauseList> t;
+};
+
 struct OpenMPSimpleStandaloneConstruct {
   TUPLE_CLASS_BOILERPLATE(OpenMPSimpleStandaloneConstruct);
   CharBlock source;
@@ -4180,7 +4210,7 @@ struct OpenMPStandaloneConstruct {
   CharBlock source;
   std::variant<OpenMPSimpleStandaloneConstruct, OpenMPFlushConstruct,
       OpenMPCancelConstruct, OpenMPCancellationPointConstruct,
-      OpenMPDepobjConstruct>
+      OpenMPDepobjConstruct, OpenMPInteropConstruct>
       u;
 };
 
