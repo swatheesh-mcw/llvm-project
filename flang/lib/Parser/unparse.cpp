@@ -2091,18 +2091,20 @@ public:
     Walk(std::get<OmpObjectList>(x.t));
   }
   void Unparse(const OmpInitClause::InteropTypes &x) {
-    Walk(x.v,",");
+    Walk(x.v, ",");
   }
   void Unparse(const OmpInitClause::InteropPreferenceList &x) {
-    Walk(x.v,",");
+    Walk(x.v, ",");
   }
   void Unparse(const OmpInitClause &x) {
-    Walk("PREFER_TYPE(",std::get<std::optional<OmpInitClause::InteropPreferenceList>>(x.t),"),");
+    Walk("PREFER_TYPE(",
+         std::get<std::optional<OmpInitClause::InteropPreferenceList>>(x.t),
+         "),");
     Walk(std::get<OmpInitClause::InteropTypes>(x.t));
-    Put(":");
+    Put(": ");
     Walk(std::get<OmpInitClause::InteropVar>(x.t));
   }
-  void Unparse(const OmpMapClause &x) {
+  void Unparse(const OmpMapClause &x) { 
     auto &typeMod =
         std::get<std::optional<std::list<OmpMapClause::TypeModifier>>>(x.t);
     auto &iter = std::get<std::optional<std::list<OmpIteratorModifier>>>(x.t);
