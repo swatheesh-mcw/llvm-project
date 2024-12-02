@@ -3744,15 +3744,15 @@ struct InteropType {
   WRAPPER_CLASS_BOILERPLATE(InteropType, Kind);
 };
 
-// struct InteropPreference {
-//   UNION_CLASS_BOILERPLATE(InteropPreference);
-//   std::variant<Name,IntConstantExpr> u;
-// };
+struct InteropPreference {
+  UNION_CLASS_BOILERPLATE(InteropPreference);
+  std::variant<CharLiteralConstant, ScalarIntConstantExpr> u;
+};
 
 // init-clause -> ([Interop-Modifier(InteropPreferenceList), InteropTypes: InteropVar])
 struct OmpInitClause {
   TUPLE_CLASS_BOILERPLATE(OmpInitClause);
-  WRAPPER_CLASS(InteropPreferenceList, std::list<IntConstantExpr>);
+  WRAPPER_CLASS(InteropPreferenceList, std::list<InteropPreference>);
   WRAPPER_CLASS(InteropTypes, std::list<InteropType>);
   WRAPPER_CLASS(InteropVar, OmpObject);
   std::tuple<std::optional<InteropPreferenceList>, InteropTypes, InteropVar> t;

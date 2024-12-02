@@ -478,12 +478,15 @@ TYPE_PARSER(construct<InteropType>(
               "TARGETSYNC" >> pure(InteropType::Kind::TargetSync) ||
               "TARGET" >> pure(InteropType::Kind::Target)))
 
+
 // InteropPreference
-// TYPE_PARSER(construct<InteropPreference>(name || intConstantExpr))
+TYPE_PARSER(construct<InteropPreference>(
+    construct<InteropPreference>(charLiteralConstant) ||
+    construct<InteropPreference>(scalarIntConstantExpr)))
 
 // init clause
 TYPE_PARSER(construct<OmpInitClause>(
-    maybe("PREFER_TYPE" >> parenthesized(nonemptyList(intConstantExpr)) / ","),
+    maybe(verbatim("PREFER_TYPE"_tok) >> parenthesized(nonemptyList(Parser<InteropPreference>{})) / ","),
     nonemptyList(Parser<InteropType>{}) / ":", Parser<OmpObject>{}))
 
 // 2.8.1 ALIGNED (list: alignment)
