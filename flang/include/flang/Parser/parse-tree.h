@@ -3738,7 +3738,10 @@ struct OmpOrderClause {
   std::tuple<std::optional<OmpOrderModifier>, Type> t;
 };
 
-// InteropType
+// REF: [5.1:217-220], [5.2:293-294]
+//
+// init-clause -> INIT ([interop-modifier,] [interop-type,]
+//                              interop-type: interop-var)
 struct InteropType {
   ENUM_CLASS(Kind, Target, TargetSync)
   WRAPPER_CLASS_BOILERPLATE(InteropType, Kind);
@@ -3749,7 +3752,6 @@ struct InteropPreference {
   std::variant<CharLiteralConstant, ScalarIntConstantExpr> u;
 };
 
-// init-clause -> ([Interop-Modifier(InteropPreferenceList), InteropTypes: InteropVar])
 struct OmpInitClause {
   TUPLE_CLASS_BOILERPLATE(OmpInitClause);
   WRAPPER_CLASS(InteropPreferenceList, std::list<InteropPreference>);
@@ -3758,7 +3760,9 @@ struct OmpInitClause {
   std::tuple<std::optional<InteropPreferenceList>, InteropTypes, InteropVar> t;
 };
 
-// use-clause (InteropVar) (InteropVar -> OmpObject)
+// REF: [5.1:217-220], [5.2:294]
+//
+// 14.1.3 use-clause -> USE (interop-var)
 WRAPPER_CLASS(OmpUseClause, OmpObject);
 
 // 2.5 proc-bind-clause -> PROC_BIND (MASTER | CLOSE | SPREAD)
@@ -4192,7 +4196,9 @@ struct OmpSimpleStandaloneDirective {
   CharBlock source;
 };
 
-// 14.1 interop -> INTEROP clause[ [ [,] clause]...]
+// Ref: [5.1:217-220], [5.2:291-292]
+//
+// interop -> INTEROP clause[ [ [,] clause]...]
 struct OpenMPInteropConstruct {
   TUPLE_CLASS_BOILERPLATE(OpenMPInteropConstruct);
   CharBlock source;
