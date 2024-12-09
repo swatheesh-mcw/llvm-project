@@ -2093,12 +2093,12 @@ public:
   void Unparse(const OmpInitClause::InteropTypes &x) {
     Walk(x.v, ",");
   }
-  void Unparse(const OmpInitClause::InteropPreferenceList &x) {
+  void Unparse(const OmpInitClause::InteropModifier &x) {
     Walk(x.v, ",");
   }
   void Unparse(const OmpInitClause &x) {
     Walk("PREFER_TYPE(",
-         std::get<std::optional<OmpInitClause::InteropPreferenceList>>(x.t),
+         std::get<std::optional<OmpInitClause::InteropModifier>>(x.t),
          "),");
     Walk(std::get<OmpInitClause::InteropTypes>(x.t));
     Put(": ");

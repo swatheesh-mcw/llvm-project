@@ -585,7 +585,7 @@ public:
   NODE(parser, InteropType)
   NODE_ENUM(InteropType, Kind)
   NODE(parser, InteropPreference)
-  NODE(OmpInitClause, InteropPreferenceList)
+  NODE(OmpInitClause, InteropModifier)
   NODE(OmpInitClause, InteropTypes)
   NODE(OmpInitClause, InteropVar)
   NODE(parser, OmpUseClause)

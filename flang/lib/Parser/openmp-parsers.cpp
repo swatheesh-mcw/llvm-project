@@ -478,7 +478,6 @@ TYPE_PARSER(construct<InteropType>(
               "TARGETSYNC" >> pure(InteropType::Kind::TargetSync) ||
               "TARGET" >> pure(InteropType::Kind::Target)))
 
-
 // InteropPreference
 TYPE_PARSER(construct<InteropPreference>(
     construct<InteropPreference>(charLiteralConstant) ||

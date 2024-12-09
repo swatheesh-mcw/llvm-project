@@ -527,7 +527,7 @@ public:
   READ_FEATURE(InteropType)
   READ_FEATURE(InteropType::Kind)
   READ_FEATURE(InteropPreference)
-  READ_FEATURE(OmpInitClause::InteropPreferenceList)
+  READ_FEATURE(OmpInitClause::InteropModifier)
   READ_FEATURE(OmpInitClause::InteropTypes)
   READ_FEATURE(OmpInitClause::InteropVar)
   READ_FEATURE(OmpUseClause)
